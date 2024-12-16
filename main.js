@@ -1,6 +1,8 @@
 const adventBody = document.getElementById('advent')
 const modal = document.getElementById('modal')
-const today = new Date().getDate()
+const title = document.getElementById('title')
+const subTitle = document.getElementById('subtitle')
+const date = new Date()
 const source = [
     {
         "type": "image",
@@ -129,7 +131,61 @@ const source = [
     }
 ];
 
-function createIcons(){
+function clickDay(){
+    const days = document.querySelectorAll('.card')
+    for (let j = 0; j < days.length; j++) {
+        if(date.getMonth() === 11){
+            if(j < date.getDate()){
+                days[j].addEventListener('click', ()=>{
+                    console.log(j)
+                    // Apri card
+                    days[j].classList.add('opened')
+                    // Stampa della modale
+                    modal.classList.remove('none')
+                    if(source[j].type === 'text'){
+                        modal.innerHTML = `
+                        <h4>Buon ${j + 1} Dicembre</h4>
+                        <p>${source[j].text}</p>
+                            <span id="btn-close">Chiudi</span>
+                        `
+                    } else {
+                        modal.innerHTML = `
+                        <h4>Buon ${j + 1 === 25 ? 'NATALE' : j + 1 + ' Dicembre'} </h4>
+                        <img class="thumb" src="${source[j].url}" alt="${source[j].icon}">
+                        <span id="btn-close">Chiudi</span>`
+                    }
+                    const btnClose = document.getElementById('btn-close')
+                        btnClose.addEventListener('click', ()=>{
+                            console.log('clickk')
+                            modal.classList.add('none')
+                        })   
+                })
+            } else {
+                days[j].addEventListener('click', ()=>{
+                    console.log('click fuori giorno')
+                    modal.classList.remove('none')
+                    modal.innerHTML = `<h4>Troppo presto mancano: ${toChristmas()}</h4>
+                    <span id="btn-close">Chiudi</span>`
+                    const btnClose = document.getElementById('btn-close')
+                    btnClose.addEventListener('click', ()=>{
+                        console.log('clickk')
+                        modal.classList.add('none')
+                    })  
+                })
+            } 
+        
+        }
+
+    }
+}
+
+function createCalendar(){
+    title.innerText = `Advent Calendar ${date.getFullYear()}`
+    if(!toChristmas()){
+        subTitle.innerText = `BUON NATALE - FELIZ NAVIDAD - MERRY CHIRSTMAS`
+    } else {
+        subTitle.innerText = `Mancano: ${toChristmas()} giorni`
+    }
     for (let i = 0; i < source.length; i++) {
             adventBody.innerHTML += `
                 <div class="card">
@@ -139,38 +195,15 @@ function createIcons(){
                     </div>
                 </div>`        
     }
-    const days = document.querySelectorAll('.card')
-
-    for (let j = 0; j < days.length; j++) {
-        if(j < today){
-            days[j].addEventListener('click', ()=>{
-                console.log(j)
-                // Apri card
-                days[j].classList.add('opened')
-                // Stampa della modale
-                modal.classList.remove('none')
-                if(source[j].type === 'text'){
-                    modal.innerHTML = `
-                    <h4>Buon ${j + 1} Dicembre</h4>
-                    <p>${source[j].text}</p>
-                        <span id="btn-close">Chiudi</span>
-                    `
-                } else {
-                    modal.innerHTML = `
-                    <h4>Buon ${j + 1 === 25 ? 'NATALE' : j + 1 + ' Dicembre'} </h4>
-                    <img class="thumb" src="${source[j].url}" alt="${source[j].icon}">
-                    <span id="btn-close">Chiudi</span>`
-                }
-                const btnClose = document.getElementById('btn-close')
-                    btnClose.addEventListener('click', ()=>{
-                        console.log('clickk')
-                        modal.classList.add('none')
-                    })   
-            })
-        }
-    }
+    clickDay()
 }
-createIcons()
+
+function toChristmas(){
+    const christmas = new Date(date.getFullYear(), 11, 25)
+    daysLeft = Math.ceil((christmas - date) / (1000 * 60 * 60 * 24))
+    return daysLeft
+}
+createCalendar()
 
 
 
